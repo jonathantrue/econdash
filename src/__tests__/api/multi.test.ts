@@ -36,6 +36,7 @@ describe('POST /api/multi', () => {
   it('returns 400 for invalid JSON', async () => {
     const req = new Request('http://localhost/api/multi', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: 'not json',
     })
     const res = await POST(req)

@@ -13,7 +13,8 @@ const ADAPTER_MAP: Record<Adapter, (id: string, opts: FetchOptions) => Promise<S
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
-  const adapter = (searchParams.get('adapter') ?? 'fred') as Adapter
+  const adapterParam = searchParams.get('adapter') ?? 'fred'
+  const adapter = adapterParam as Adapter  // safe: guarded below before use
   const range = (searchParams.get('range') ?? '5y') as FetchOptions['range']
   const startDate = searchParams.get('startDate') ?? undefined
   const endDate = searchParams.get('endDate') ?? undefined
@@ -22,14 +23,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing required param: id' }, { status: 400 })
   }
 
-  if (!SUPPORTED_ADAPTERS.includes(adapter)) {
+  if (!SUPPORTED_ADAPTERS.includes(adapterParam as Adapter)) {
     return NextResponse.json(
       { error: `Unsupported adapter: ${adapter}. Supported: ${SUPPORTED_ADAPTERS.join(', ')}` },
       { status: 400 }
     )
   }
 
-  const cacheKey = buildCacheKey(adapter, id, range ?? startDate ?? 'custom')
+  const cacheKey = buildCacheKey(adapter, id, startDate ? `custom:${startDate}` : (range ?? '5y'))
   const cached = await getCached<SeriesData>(cacheKey)
   if (cached) return NextResponse.json(cached)
 

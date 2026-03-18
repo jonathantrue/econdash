@@ -62,4 +62,12 @@ describe('GET /api/series', () => {
     await GET(makeRequest({ id: 'CPIAUCSL', adapter: 'fred', range: '5y' }))
     expect(cacheModule.setCached).toHaveBeenCalled()
   })
+
+  it('returns 502 when adapter throws', async () => {
+    jest.mocked(fredModule.fetchFredSeries).mockRejectedValue(new Error('FRED down'))
+    const res = await GET(makeRequest({ id: 'CPIAUCSL', adapter: 'fred', range: '5y' }))
+    expect(res.status).toBe(502)
+    const body = await res.json() as { error: string }
+    expect(body.error).toContain('FRED down')
+  })
 })
