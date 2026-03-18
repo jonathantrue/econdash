@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash \"/c/Users/truej/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.4/skills/brainstorming/scripts/start-server.sh\" --project-dir \"/c/Users/truej/OneDrive/Desktop/claudecli\")",
+      "Bash(bash \"/c/Users/truej/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh\" --project-dir \"/c/Users/truej/OneDrive/Desktop/claudecli\")",
+      "Bash(git init:*)",
+      "Bash(gh repo:*)",
+      "Bash(npx:*)",
+      "Bash(# Copy all files \\(including hidden, excluding .git and .next\\) from temp to claudecli\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/.gitignore /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/README.md /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/eslint.config.mjs /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/next-env.d.ts /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/next.config.ts /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/package.json /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/package-lock.json /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/postcss.config.mjs /c/Users/truej/OneDrive/Desktop/claudecli/\ncp /c/Users/truej/OneDrive/Desktop/econdash-temp/tsconfig.json /c/Users/truej/OneDrive/Desktop/claudecli/\ncp -r /c/Users/truej/OneDrive/Desktop/econdash-temp/src /c/Users/truej/OneDrive/Desktop/claudecli/\ncp -r /c/Users/truej/OneDrive/Desktop/econdash-temp/public /c/Users/truej/OneDrive/Desktop/claudecli/\necho \"Done copying\")",
+      "Bash(npm ls:*)",
+      "Bash(npm test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Read(//c/Users/truej/**)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(''''next:'''', d[''''version'''']\\)\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''/c/Users/truej/OneDrive/Desktop/claudecli/node_modules/next/package.json''\\)\\); print\\(''next:'', d[''version'']\\)\")",
+      "Bash(node -e \"const p=require\\(''./node_modules/next/package.json''\\); console.log\\(''next:'', p.version\\)\")",
+      "Bash(npm uninstall:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(where gh:*)",
+      "Bash(powershell.exe -Command \"where.exe gh\")",
+      "Bash(powershell.exe -Command \"Get-Command gh\")",
+      "Bash(powershell.exe -Command \"Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Read(//c/Program Files/GitHub CLI//**)",
+      "Bash(powershell.exe -Command \"\\(Get-Command gh\\).Source\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Program Files\\\\GitHub CLI'' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Users\\\\truej\\\\AppData\\\\Local\\\\GitHub CLI'' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Users\\\\truej\\\\AppData\\\\Roaming\\\\GitHub CLI'' -ErrorAction SilentlyContinue\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status 2>&1)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create econdash --public --source=. --remote=origin --push)",
+      "Bash(printf '\\\\n\\\\n\\\\n\\\\n\\\\n')"
+    ]
+  }
+}
