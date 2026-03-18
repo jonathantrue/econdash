@@ -27,7 +27,7 @@ function getStubTicker(): TickerData {
   }
 }
 
-export async function GET() {
+export async function GET(_request: Request) {
   const cacheKey = buildCacheKey('ticker', 'markets', '60s')
   const cached = await getCached<TickerData>(cacheKey)
   if (cached) return NextResponse.json(cached)
