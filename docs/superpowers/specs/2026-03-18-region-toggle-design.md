@@ -10,6 +10,7 @@ Add a States / Regions toggle to the Regional Explorer map. In region mode, US s
 - **Aggregation:** Simple average of member states' latest values (choropleth color) and month-by-month simple average of historical data (drill-down chart).
 - **Toggle placement:** Inside the map card header, top-right, as compact pill buttons — consistent with existing chart control styling.
 - **No additional API calls:** Region series are computed client-side from the 51 state series already fetched by `useMultiSeries`.
+- **v1 range limitation:** `STATE_REQUESTS` fetches all state series with `range: '1y'`. The region drill-down chart therefore always shows ~12 months of averaged data. The `DateRangePills` control remains visible (no changes to `ChartWrapper`), but the subtitle reads `"Simple average of N states · last 12 months"` to make the constraint clear to the user.
 
 ---
 
@@ -21,8 +22,8 @@ Add a States / Regions toggle to the Regional Explorer map. In region mode, US s
 |------|--------|---------|
 | `src/lib/data/census-regions.ts` | Create | 4 Census regions with member FIPS arrays; `getFipsToRegion()` lookup helper |
 | `src/lib/utils/region-series.ts` | Create | `computeRegionSeries()` — averages N state series into one SeriesData |
-| `src/components/regional/USChoropleth.tsx` | Modify | Replace `selectedFips?: string \| null` with `highlightedFips?: string[]` |
-| `src/components/regional/RegionalExplorer.tsx` | Modify | Mode toggle UI, region state, region drill-down wiring |
+| `src/components/regional/USChoropleth.tsx` | Modify | Breaking prop rename: `selectedFips` → `highlightedFips?: string[]`; update all call sites |
+| `src/components/regional/RegionalExplorer.tsx` | Modify | Mode toggle UI, region state, region drill-down wiring; update USChoropleth call site |
 | `src/__tests__/lib/utils/region-series.test.ts` | Create | Unit tests for `computeRegionSeries` |
 | `src/__tests__/components/regional/USChoropleth.test.tsx` | Modify | Update for `highlightedFips` prop rename |
 | `src/__tests__/components/regional/RegionalExplorer.test.tsx` | Modify | Add region mode tests |
@@ -131,13 +132,13 @@ export function computeRegionSeries(
 
 ## Component Changes
 
-### `src/components/regional/USChoropleth.tsx` — prop rename
+### `src/components/regional/USChoropleth.tsx` — prop rename (breaking)
 
 Replace `selectedFips?: string | null` with `highlightedFips?: string[]`.
 
 Internal change: `const isSelected = fips === selectedFips` becomes `const isSelected = (highlightedFips ?? []).includes(fips)`.
 
-This is backwards-compatible in effect — passing `[]` or omitting the prop leaves all states unselected.
+**This is a breaking API change.** The only call site is `RegionalExplorer.tsx`. Its existing `selectedFips={selectedFips}` line must change to `highlightedFips={selectedFips ? [selectedFips] : []}` in state mode. No `!` non-null assertion is needed anywhere — `results[idx]` under `noUncheckedIndexedAccess` is already typed `SeriesData | undefined` and the null-guard on `series` handles it.
 
 ### `src/components/regional/RegionalExplorer.tsx` — mode toggle + region drill-down
 
@@ -147,7 +148,7 @@ const [mode, setMode] = useState<'states' | 'regions'>('states')
 const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
 ```
 
-Module-level constant (stable reference):
+Module-level constant (stable reference, avoids re-creating the Map on each render):
 ```typescript
 const FIPS_TO_REGION = getFipsToRegion()
 ```
@@ -177,17 +178,17 @@ Toggle UI (inside map card header, top-right):
 </div>
 ```
 
-**State mode** — identical to current behavior. `highlightedFips={selectedFips ? [selectedFips] : []}`.
+**State mode** — identical to current behavior. Pass `highlightedFips={selectedFips ? [selectedFips] : []}` to `USChoropleth`.
 
 **Region mode:**
-- `choroplethValues`: each state maps to the simple average of its region's member states' latest values
-- `highlightedFips`: all FIPS codes in `selectedRegionId`'s region (or `[]`)
+- `choroplethValues`: each state maps to its region's average (see `regionAverages` memo below)
+- `highlightedFips`: all FIPS in the selected region (or `[]`)
 - `onStateClick`: maps FIPS → region id via `FIPS_TO_REGION`, calls `setSelectedRegionId`
-- Drill-down: `computeRegionSeries(region.id, region.name, memberSeriesData)` passed directly as `data` prop to `ChartWrapper`
-- `isLoading={false}`, `isError={false}`, `isStale={false}` for the region chart (data is already in memory)
-- Title: `"{Region Name} Unemployment"`, subtitle: `"Simple average of N states"`
+- Drill-down: `ChartWrapper` with `data={selectedRegionSeries}` (see memo below), `seriesId={region.id}` (e.g. `'northeast'`), `isLoading={false}`, `isError={false}`, `isStale={false}`, no `onRetry`
+- Title: `"{Region Name} Unemployment"`, subtitle: `"Simple average of {N} states · last 12 months"`
+- The `DateRangePills` control remains visible inside `ChartWrapper` (no changes to `ChartWrapper`). Selecting a different range updates `drillRange` state but does not change the underlying data — the subtitle `"last 12 months"` makes this constraint clear. This is the accepted v1 trade-off.
 
-**Computing region choropleth values:**
+**Computing region averages (choropleth color in region mode):**
 ```typescript
 const regionAverages = useMemo(() => {
   if (!results) return new Map<string, number | null>()
@@ -196,6 +197,7 @@ const regionAverages = useMemo(() => {
       const memberValues = region.fips
         .map(fips => {
           const idx = STATES.findIndex(s => s.fips === fips)
+          // results[idx] is SeriesData | undefined under noUncheckedIndexedAccess — no ! needed
           const series = idx >= 0 ? results[idx] : undefined
           const last = series && series.data.length > 0
             ? series.data[series.data.length - 1]
@@ -212,7 +214,21 @@ const regionAverages = useMemo(() => {
 }, [results])
 ```
 
-Region choropleth values (each state gets its region's average):
+**Computing region drill-down series:**
+```typescript
+const selectedRegionSeries = useMemo(() => {
+  if (!selectedRegionId || !results) return null
+  const region = CENSUS_REGIONS.find(r => r.id === selectedRegionId)
+  if (!region) return null
+  const memberSeriesData = region.fips.map(fips => {
+    const idx = STATES.findIndex(s => s.fips === fips)
+    return idx >= 0 ? results[idx] : undefined
+  })
+  return computeRegionSeries(region.id, region.name, memberSeriesData)
+}, [results, selectedRegionId])
+```
+
+**Choropleth values (state vs region mode):**
 ```typescript
 const choroplethValues = mode === 'states'
   ? STATES.map((s, i) => ({ fips: s.fips, value: results?.[i]?.data.at(-1)?.value ?? null }))
@@ -227,24 +243,24 @@ const choroplethValues = mode === 'states'
 ## Testing
 
 ### `src/__tests__/lib/utils/region-series.test.ts` (new, 4 tests)
-- Returns averaged data points for dates present in all series
-- Handles missing states (undefined/null entries)
-- Sorts output by date
-- Returns empty data array when all inputs are null
+- Returns correctly averaged data points when all member series have matching dates
+- Handles sparse input: undefined/null entries are skipped; dates missing from some states are averaged over present states only
+- Sorts output chronologically when input dates are unordered
+- Returns empty `data` array when all inputs are null/undefined
 
 ### `src/__tests__/components/regional/USChoropleth.test.tsx` (update existing)
-- Replace `selectedFips` with `highlightedFips` in click test
-- Add test: multiple FIPS in `highlightedFips` all render amber
+- Replace `selectedFips` prop with `highlightedFips` in the click test
+- Add test: multiple FIPS in `highlightedFips` all get amber fill (state `'06'` and `'36'` both highlighted)
 
 ### `src/__tests__/components/regional/RegionalExplorer.test.tsx` (add 3 tests)
-- Toggle renders "States" and "Regions" buttons
-- Clicking "Regions" button switches to region mode
-- In region mode, clicking the choropleth calls `setSelectedRegionId` (not state FIPS)
+- Toggle renders both "States" and "Regions" buttons
+- Clicking "Regions" button renders the toggle in active state
+- In region mode, clicking the choropleth stub triggers region selection (calls into `FIPS_TO_REGION` path, not raw FIPS)
 
 ---
 
 ## What Doesn't Change
 
-- `useMultiSeries` and all API routes — no new fetches
-- `ChartWrapper` — receives computed data the same way it does in state mode
+- `useMultiSeries`, all API routes — no new fetches
+- `ChartWrapper` — receives computed data the same way as in state mode
 - `KPIRow`, `FeaturedChart`, all detail pages — untouched
