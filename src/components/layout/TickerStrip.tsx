@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { TickerData } from '@/app/api/ticker/route'
+import type { TickerData } from '@/lib/data/types'
 
 function TickerItem({ label, value, change, format = 'number' }: {
   label: string
@@ -51,7 +51,11 @@ export function TickerStrip() {
   }
 
   return (
-    <div className="bg-blue-900 border-b border-blue-700 px-6 py-1 flex items-center gap-6 overflow-x-auto">
+    <div
+      className="bg-blue-900 border-b border-blue-700 px-6 py-1 flex items-center gap-6 overflow-x-auto"
+      role="region"
+      aria-label="Market ticker"
+    >
       <TickerItem label="S&P 500" value={ticker.sp500.value} change={ticker.sp500.change} />
       <TickerItem label="Dow" value={ticker.dow.value} change={ticker.dow.change} />
       <TickerItem label="Nasdaq" value={ticker.nasdaq.value} change={ticker.nasdaq.change} />

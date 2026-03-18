@@ -20,3 +20,18 @@ export type FetchOptions = {
   endDate?: string     // ISO 8601 — defaults to today
   frequency?: 'monthly' | 'quarterly' | 'annual'
 }
+
+export type TickerItem = {
+  value: number
+  change: number
+}
+
+export type TickerData = {
+  sp500: TickerItem
+  dow: TickerItem
+  nasdaq: TickerItem
+  yield10y: TickerItem
+  wti: TickerItem
+  gold: TickerItem
+  updatedAt: string
+}

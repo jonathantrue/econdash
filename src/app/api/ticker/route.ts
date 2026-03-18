@@ -1,17 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getCached, setCached, buildCacheKey } from '@/lib/cache'
+import type { TickerData } from '@/lib/data/types'
 
-type TickerItem = { value: number; change: number }
-
-export type TickerData = {
-  sp500: TickerItem
-  dow: TickerItem
-  nasdaq: TickerItem
-  yield10y: TickerItem
-  wti: TickerItem
-  gold: TickerItem
-  updatedAt: string
-}
+export type { TickerData } from '@/lib/data/types'
 
 const TICKER_TTL = 60  // 60 seconds
 
