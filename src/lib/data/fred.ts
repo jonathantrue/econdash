@@ -77,7 +77,12 @@ export async function fetchFredSeries(seriesId: string, options: FetchOptions): 
     .filter(obs => obs.value !== '.' && obs.date !== '.')
     .map(obs => ({ date: obs.date, value: parseFloat(obs.value) }))
 
-  const meta = FRED_SERIES_META[seriesId] ?? DEFAULT_META
+  // State unemployment rate series (e.g. CAUR, NYUR) follow {STATE}UR pattern.
+  // They are not in FRED_SERIES_META to avoid 51 individual entries.
+  const stateUrMeta = /^[A-Z]{2}UR$/.test(seriesId)
+    ? { name: 'State Unemployment Rate', units: 'Percent', unitsShort: '%', frequency: 'monthly' as const }
+    : null
+  const meta = FRED_SERIES_META[seriesId] ?? stateUrMeta ?? DEFAULT_META
 
   return {
     id: seriesId,
