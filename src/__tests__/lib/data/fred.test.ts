@@ -42,7 +42,8 @@ describe('fetchFredSeries', () => {
 
   it('parses observation values as numbers', async () => {
     const result = await fetchFredSeries('CPIAUCSL', { range: '5y' })
-    expect(result.data[0]).toEqual({ date: '2019-01-01', value: 1.6 })
+    const first = result.data[0]
+    expect(first).toEqual({ date: '2019-01-01', value: 1.6 })
   })
 
   it('calls FRED API with correct params', async () => {

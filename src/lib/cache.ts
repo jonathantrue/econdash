@@ -4,6 +4,8 @@ export function buildCacheKey(...parts: string[]): string {
   return parts.join(':')
 }
 
+// Accepts `string` (not `FetchOptions['range']`) intentionally — the ticker route
+// passes non-standard values like '60s' which correctly fall through to the 5-minute default.
 export function getTtlForRange(range: string): number {
   if (range === '10y' || range === 'max') return 7 * 24 * 60 * 60  // 7 days
   if (range === '5y' || range === '2y') return 24 * 60 * 60         // 24 hours

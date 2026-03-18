@@ -28,6 +28,7 @@ const DEFAULT_META: SeriesMeta = {
 export function fredRangeToDate(range: string): string | undefined {
   if (range === 'max') return undefined
   const years = parseInt(range.replace('y', ''), 10)
+  if (isNaN(years)) return undefined
   const d = new Date()
   d.setFullYear(d.getFullYear() - years)
   return d.toISOString().split('T')[0]
