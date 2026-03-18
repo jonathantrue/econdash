@@ -1,4 +1,12 @@
-import { kv } from '@vercel/kv'
+import Redis from 'ioredis'
+
+let _client: Redis | null = null
+
+function getClient(): Redis | null {
+  if (!process.env.REDIS_URL) return null
+  if (!_client) _client = new Redis(process.env.REDIS_URL)
+  return _client
+}
 
 export function buildCacheKey(...parts: string[]): string {
   return parts.join(':')
@@ -14,17 +22,22 @@ export function getTtlForRange(range: string): number {
 
 export async function getCached<T>(key: string): Promise<T | null> {
   try {
-    return await kv.get<T>(key)
+    const client = getClient()
+    if (!client) return null
+    const raw = await client.get(key)
+    if (!raw) return null
+    return JSON.parse(raw) as T
   } catch {
-    // KV unavailable in local dev without env vars — return null (cache miss)
     return null
   }
 }
 
 export async function setCached<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
   try {
-    await kv.set(key, value, { ex: ttlSeconds })
+    const client = getClient()
+    if (!client) return
+    await client.set(key, JSON.stringify(value), 'EX', ttlSeconds)
   } catch {
-    // KV unavailable in local dev — silently skip caching
+    // Redis unavailable — silently skip caching
   }
 }
