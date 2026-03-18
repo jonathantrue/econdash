@@ -263,15 +263,13 @@ export function ChartWrapper({
         {!isLoading && isError && (
           <div className="flex flex-col items-center justify-center gap-2 text-sm text-slate-500" style={{ height }}>
             <p>Could not load data · {data?.source ?? 'source'}</p>
-            {onRetry && (
-              <button
-                type="button"
-                onClick={onRetry}
-                className="text-blue-600 hover:underline text-xs"
-              >
-                Retry
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={onRetry}
+              className="text-blue-600 hover:underline text-xs"
+            >
+              Retry
+            </button>
           </div>
         )}
         {!isLoading && !isError && chartData.length > 0 && (
