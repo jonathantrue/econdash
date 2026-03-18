@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useQueryState, parseAsString, parseAsBoolean, parseAsStringEnum } from 'nuqs'
 import { useSeries } from '@/lib/hooks/useSeries'
 import { ChartWrapper } from '@/components/charts/ChartWrapper'
@@ -19,7 +20,7 @@ type DetailPageProps = {
   tabs: readonly TabConfig[]
 }
 
-export function DetailPage({ title, tabs }: DetailPageProps) {
+function DetailPageInner({ title, tabs }: DetailPageProps) {
   const firstTabId = tabs[0]?.id ?? ''
 
   const [activeTab, setActiveTab] = useQueryState('tab', parseAsString.withDefault(firstTabId))
@@ -85,5 +86,13 @@ export function DetailPage({ title, tabs }: DetailPageProps) {
         />
       )}
     </div>
+  )
+}
+
+export function DetailPage(props: DetailPageProps) {
+  return (
+    <Suspense>
+      <DetailPageInner {...props} />
+    </Suspense>
   )
 }
