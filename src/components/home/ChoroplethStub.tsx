@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export function ChoroplethStub() {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center justify-center gap-3 h-full min-h-[320px]">
@@ -7,9 +9,14 @@ export function ChoroplethStub() {
       />
       <p className="text-sm font-semibold text-slate-700">Regional Explorer</p>
       <p className="text-xs text-slate-400 text-center">
-        State-level economic data map<br />
-        coming in a future update
+        State-level unemployment rates<br />mapped by FIPS code
       </p>
+      <Link
+        href="/regional"
+        className="mt-1 text-xs font-medium text-blue-600 hover:underline"
+      >
+        View Map
+      </Link>
     </div>
   )
 }
