@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useId, useRef } from 'react'
 import {
   ResponsiveContainer,
   LineChart, BarChart, AreaChart,
@@ -75,6 +75,7 @@ export function ChartWrapper({
   height = 320,
 }: ChartWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const gradientId = useId().replace(/:/g, '-')
 
   // Build merged chartData with timestamps and pre-computed YoY % change.
   // YoY looks back 12 points for monthly data, 4 points for quarterly.
@@ -154,7 +155,7 @@ export function ChartWrapper({
   )
 
   const recessionEl = recessionBands && domainStart > 0 ? (
-    <RecessionBands domainStart={domainStart} domainEnd={domainEnd} />
+    <RecessionBands domainStart={domainStart} domainEnd={domainEnd} yAxisId="left" />
   ) : null
 
   function renderChart() {
@@ -177,7 +178,7 @@ export function ChartWrapper({
       return (
         <AreaChart data={chartData}>
           <defs>
-            <linearGradient id="primaryGrad" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
               <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
@@ -188,7 +189,7 @@ export function ChartWrapper({
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
           {tooltipEl}
           {recessionEl}
-          <Area type="monotone" dataKey="value" yAxisId="left" stroke="#3b82f6" fill="url(#primaryGrad)" strokeWidth={2} dot={false} />
+          <Area type="monotone" dataKey="value" yAxisId="left" stroke="#3b82f6" fill={`url(#${gradientId})`} strokeWidth={2} dot={false} />
           {overlay && <Area type="monotone" dataKey="overlayValue" yAxisId={dualAxis ? 'right' : 'left'} stroke="#ef4444" fill="none" strokeWidth={1.5} dot={false} strokeDasharray="4 2" />}
           {overlay && <Legend />}
         </AreaChart>
