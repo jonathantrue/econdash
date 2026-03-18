@@ -12,6 +12,9 @@ jest.mock('nuqs', () => {
       useState(opts?.defaultValue ?? null),
     parseAsString: { withDefault: (v: string) => ({ defaultValue: v }) },
     parseAsBoolean: { withDefault: (v: boolean) => ({ defaultValue: v }) },
+    parseAsStringEnum: (_values: unknown[]) => ({
+      withDefault: (v: unknown) => ({ defaultValue: v }),
+    }),
   }
 })
 

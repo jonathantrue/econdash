@@ -1,6 +1,6 @@
 'use client'
 
-import { useQueryState, parseAsString, parseAsBoolean } from 'nuqs'
+import { useQueryState, parseAsString, parseAsBoolean, parseAsStringEnum } from 'nuqs'
 import { useSeries } from '@/lib/hooks/useSeries'
 import { ChartWrapper } from '@/components/charts/ChartWrapper'
 import type { FetchOptions } from '@/lib/data/types'
@@ -23,8 +23,14 @@ export function DetailPage({ title, tabs }: DetailPageProps) {
   const firstTabId = tabs[0]?.id ?? ''
 
   const [activeTab, setActiveTab] = useQueryState('tab', parseAsString.withDefault(firstTabId))
-  const [range, setRange] = useQueryState('range', parseAsString.withDefault('5y'))
-  const [chartType, setChartType] = useQueryState('chartType', parseAsString.withDefault('line'))
+  const [range, setRange] = useQueryState(
+    'range',
+    parseAsStringEnum<Range>(['1y', '2y', '5y', '10y', 'max']).withDefault('5y')
+  )
+  const [chartType, setChartType] = useQueryState(
+    'chartType',
+    parseAsStringEnum<ChartType>(['line', 'bar', 'area']).withDefault('line')
+  )
   const [recessionBands, setRecessionBands] = useQueryState(
     'recessionBands',
     parseAsBoolean.withDefault(false)
@@ -34,7 +40,7 @@ export function DetailPage({ title, tabs }: DetailPageProps) {
 
   const { data, isLoading, isError, isStale, retry } = useSeries(
     currentTab
-      ? { id: currentTab.seriesId, adapter: 'fred', options: { range: range as Range } }
+      ? { id: currentTab.seriesId, adapter: 'fred', options: { range } }
       : null
   )
 
@@ -70,9 +76,9 @@ export function DetailPage({ title, tabs }: DetailPageProps) {
           isError={isError}
           isStale={isStale}
           onRetry={retry}
-          range={range as Range}
+          range={range}
           onRangeChange={r => void setRange(r)}
-          chartType={chartType as ChartType}
+          chartType={chartType}
           onChartTypeChange={t => void setChartType(t)}
           recessionBands={recessionBands}
           onRecessionBandsToggle={() => void setRecessionBands(r => !(r ?? false))}
