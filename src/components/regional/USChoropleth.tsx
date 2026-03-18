@@ -34,7 +34,7 @@ type USChoroplethProps = {
   values: StateValue[]
   colorDomain?: [number, number]
   onStateClick?: (fips: string) => void
-  selectedFips?: string | null
+  highlightedFips?: string[]
 }
 
 const WIDTH = 975
@@ -44,7 +44,7 @@ export function USChoropleth({
   values,
   colorDomain = [2, 10],
   onStateClick,
-  selectedFips = null,
+  highlightedFips = [],
 }: USChoroplethProps) {
   const { pathGenerator, stateFeatures } = useMemo(() => {
     const projection = geoAlbersUsa().scale(1300).translate([WIDTH / 2, HEIGHT / 2])
@@ -79,7 +79,7 @@ export function USChoropleth({
         const value = valueMap.get(fips) ?? null
         const fill = value !== null ? colorScale(value) : '#e2e8f0'
         const pathD = pathGenerator(state as Parameters<typeof pathGenerator>[0]) ?? ''
-        const isSelected = fips === selectedFips
+        const isSelected = highlightedFips.includes(fips)
 
         return (
           <path

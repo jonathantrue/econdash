@@ -67,4 +67,14 @@ describe('USChoropleth', () => {
       render(<USChoropleth values={[{ fips: '06', value: null }]} />)
     ).not.toThrow()
   })
+
+  it('highlights all FIPS in highlightedFips with amber fill', () => {
+    const { container } = render(
+      <USChoropleth values={[]} highlightedFips={['06', '36']} />
+    )
+    const paths = container.querySelectorAll('path')
+    // Mock topology has features with id 6 (→ '06') and 36 (→ '36'), in that order.
+    expect(paths[0]).toHaveAttribute('fill', '#f59e0b')
+    expect(paths[1]).toHaveAttribute('fill', '#f59e0b')
+  })
 })
