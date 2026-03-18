@@ -3,10 +3,10 @@ import { Inter, Geist } from 'next/font/google'
 import './globals.css'
 import { NavBar } from '@/components/layout/NavBar'
 import { TickerStrip } from '@/components/layout/TickerStrip'
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -16,11 +16,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn('font-sans', geist.variable)}>
       <body className={`${inter.className} bg-slate-50 min-h-screen`}>
         <NavBar />
         <TickerStrip />
-        <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+        <NuqsAdapter>
+          <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+        </NuqsAdapter>
       </body>
     </html>
   )

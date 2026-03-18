@@ -16,6 +16,17 @@ const FRED_SERIES_META: Record<string, SeriesMeta> = {
   DGS2:      { name: '2-Year Treasury Yield', units: 'Percent', unitsShort: '%', frequency: 'daily' },
   UNRATE:    { name: 'Unemployment Rate', units: 'Percent', unitsShort: '%', frequency: 'monthly' },
   FIXHAI:    { name: 'Housing Affordability Index', units: 'Index', unitsShort: 'Index', frequency: 'monthly' },
+  // Labor
+  PAYEMS:       { name: 'Nonfarm Payrolls', units: 'Thousands of Persons', unitsShort: 'K', frequency: 'monthly' },
+  CIVPART:      { name: 'Labor Force Participation Rate', units: 'Percent', unitsShort: '%', frequency: 'monthly' },
+  U6RATE:       { name: 'U-6 Unemployment Rate', units: 'Percent', unitsShort: '%', frequency: 'monthly' },
+  // Markets
+  DGS30:        { name: '30-Year Treasury Yield', units: 'Percent', unitsShort: '%', frequency: 'daily' },
+  T10Y2Y:       { name: '10Y\u20132Y Treasury Spread', units: 'Percent', unitsShort: '%', frequency: 'daily' },
+  // Housing
+  MORTGAGE30US: { name: '30-Year Fixed Mortgage Rate', units: 'Percent', unitsShort: '%', frequency: 'weekly' },
+  CSUSHPISA:    { name: 'Case-Shiller Home Price Index', units: 'Index Jan 2000=100', unitsShort: 'Index', frequency: 'monthly' },
+  HOUST:        { name: 'Housing Starts', units: 'Thousands of Units', unitsShort: 'K units', frequency: 'monthly' },
 }
 
 const DEFAULT_META: SeriesMeta = {
