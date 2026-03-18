@@ -1,8 +1,12 @@
+import { DetailPage } from '@/components/detail/DetailPage'
+
+const TABS = [
+  { id: 'mortgage', label: 'Mortgage Rate',  seriesId: 'MORTGAGE30US' },
+  { id: 'prices',   label: 'Home Prices',    seriesId: 'CSUSHPISA'    },
+  { id: 'starts',   label: 'Housing Starts', seriesId: 'HOUST'        },
+  { id: 'afford',   label: 'Affordability',  seriesId: 'FIXHAI'       },
+] as const
+
 export default function HousingPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Housing & Real Estate</h1>
-      <p className="text-slate-500 mt-2">Detail page — coming in Plan 4</p>
-    </div>
-  )
+  return <DetailPage title="Housing" tabs={TABS} />
 }

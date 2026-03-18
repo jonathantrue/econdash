@@ -1,8 +1,12 @@
+import { DetailPage } from '@/components/detail/DetailPage'
+
+const TABS = [
+  { id: 'unrate',  label: 'Unemployment',  seriesId: 'UNRATE'  },
+  { id: 'u6',      label: 'U-6 Rate',      seriesId: 'U6RATE'  },
+  { id: 'payems',  label: 'Payrolls',      seriesId: 'PAYEMS'  },
+  { id: 'civpart', label: 'Participation', seriesId: 'CIVPART' },
+] as const
+
 export default function LaborPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Labor Market</h1>
-      <p className="text-slate-500 mt-2">Detail page — coming in Plan 4</p>
-    </div>
-  )
+  return <DetailPage title="Labor Market" tabs={TABS} />
 }
