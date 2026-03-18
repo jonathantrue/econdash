@@ -18,7 +18,7 @@ export function Sparkline({ data, width, height, color = '#3b82f6', showTooltip 
     <LineChart width={width} height={height} data={chartData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
       <XAxis dataKey="ts" hide />
       <YAxis hide domain={['auto', 'auto']} />
-      {showTooltip && <Tooltip formatter={(v: number) => [v.toFixed(2), '']} labelFormatter={() => ''} />}
+      {showTooltip && <Tooltip formatter={(v) => [typeof v === 'number' ? v.toFixed(2) : '', '']} labelFormatter={() => ''} />}
       <Line
         type="monotone"
         dataKey="value"
