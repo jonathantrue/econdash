@@ -21,7 +21,7 @@ export function KPIRow() {
   const { results, isLoading, isError } = useMultiSeries(REQUESTS)
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1fr] gap-4">
       {KPI_SERIES.map((kpi, i) => {
         const series = results?.[i]
         const lastPoint = series && series.data.length > 0
@@ -37,6 +37,7 @@ export function KPIRow() {
             sparklineData={series?.data}
             isLoading={isLoading}
             isError={isError}
+            variant={i === 0 ? 'hero' : 'default'}
           />
         )
       })}

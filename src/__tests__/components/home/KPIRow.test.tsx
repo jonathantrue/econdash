@@ -6,11 +6,21 @@ import { useMultiSeries } from '@/lib/hooks/useMultiSeries'
 
 jest.mock('@/lib/hooks/useMultiSeries')
 jest.mock('@/components/charts/KPICard', () => ({
-  KPICard: ({ label, isLoading, isError }: { label: string; isLoading: boolean; isError: boolean }) =>
+  KPICard: ({ label, isLoading, isError, variant }: {
+    label: string
+    isLoading: boolean
+    isError: boolean
+    variant?: string
+  }) =>
     isLoading ? (
       <div data-testid="kpi-loading" aria-label={label} />
     ) : (
-      <div data-testid={isError ? 'kpi-error' : 'kpi-card'}>{label}</div>
+      <div
+        data-testid={isError ? 'kpi-error' : 'kpi-card'}
+        data-variant={variant}
+      >
+        {label}
+      </div>
     ),
 }))
 
@@ -74,5 +84,26 @@ describe('KPIRow', () => {
     })
     render(<KPIRow />)
     expect(screen.getAllByTestId('kpi-error')).toHaveLength(5)
+  })
+
+  it('passes variant=hero to the first card and variant=default to the rest', () => {
+    mockUseMultiSeries.mockReturnValue({
+      results: [
+        makeSeries('CPIAUCSL'),
+        makeSeries('GDPC1'),
+        makeSeries('UNRATE'),
+        makeSeries('FEDFUNDS'),
+        makeSeries('DGS10'),
+      ],
+      isLoading: false,
+      isError: false,
+      retry: jest.fn(),
+    })
+    render(<KPIRow />)
+    const cards = screen.getAllByTestId('kpi-card')
+    expect(cards[0]?.getAttribute('data-variant')).toBe('hero')
+    cards.slice(1).forEach(card => {
+      expect(card.getAttribute('data-variant')).toBe('default')
+    })
   })
 })
