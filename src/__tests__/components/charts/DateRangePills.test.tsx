@@ -19,7 +19,7 @@ describe('DateRangePills', () => {
   it('highlights the active range', () => {
     render(<DateRangePills value="5y" onChange={jest.fn()} />)
     const active = screen.getByText('5Y').closest('button')
-    expect(active?.className).toContain('bg-blue-800')
+    expect(active?.className).toContain('bg-surface-lowest')
   })
 
   it('calls onChange with the selected range', async () => {
