@@ -85,4 +85,44 @@ describe('KPICard', () => {
     await userEvent.click(screen.getByRole('button'))
     expect(onClick).toHaveBeenCalledTimes(1)
   })
+
+  it('hero variant renders gradient container', () => {
+    const { container } = render(
+      <KPICard label="CPI" href="/macro" isLoading={false} isError={false} value={3.4} variant="hero" />
+    )
+    const btn = container.querySelector('button')
+    expect(btn?.className).toContain('from-primary')
+  })
+
+  it('hero variant shows em-dash with overlay-text class on error', () => {
+    render(
+      <KPICard label="CPI" href="/macro" isLoading={false} isError variant="hero" />
+    )
+    const dash = screen.getByText('—')
+    expect(dash.className).toContain('text-overlay-text')
+  })
+
+  it('default variant uses ambient shadow, not border', () => {
+    const { container } = render(
+      <KPICard label="CPI" href="/macro" isLoading={false} isError={false} value={3.4} />
+    )
+    const btn = container.querySelector('button')
+    expect(btn?.className).not.toContain('border-slate-200')
+    expect(btn?.className).toContain('shadow-')
+  })
+
+  it('default variant up-arrow uses text-chart-3', () => {
+    render(
+      <KPICard
+        label="CPI"
+        href="/macro"
+        isLoading={false}
+        isError={false}
+        value={3.4}
+        sparklineData={DATA}
+      />
+    )
+    const arrow = screen.getByText('▲')
+    expect(arrow.className).toContain('text-chart-3')
+  })
 })

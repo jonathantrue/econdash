@@ -4,6 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Sparkline } from '@/components/charts/Sparkline'
 import type { SeriesDataPoint } from '@/lib/data/types'
 
+type Variant = 'default' | 'hero'
+
 type KPICardProps = {
   label: string
   href: string
@@ -13,6 +15,7 @@ type KPICardProps = {
   isLoading: boolean
   isError: boolean
   onClick?: () => void
+  variant?: Variant
 }
 
 function getDelta(data: SeriesDataPoint[]): number | null {
@@ -23,14 +26,23 @@ function getDelta(data: SeriesDataPoint[]): number | null {
   return last.value - prev.value
 }
 
-function DeltaIndicator({ delta }: { delta: number | null }) {
-  if (delta === null) return <span className="text-slate-400 text-xs">─</span>
-  if (delta > 0) return <span className="text-green-600 text-xs">▲</span>
-  if (delta < 0) return <span className="text-red-600 text-xs">▼</span>
-  return <span className="text-slate-400 text-xs">─</span>
+function DeltaIndicator({ delta, variant = 'default' }: { delta: number | null; variant?: Variant }) {
+  if (variant === 'hero') {
+    if (delta === null) return <span className="text-overlay-text/40 text-xs">─</span>
+    if (delta > 0)      return <span className="text-overlay-text/80 text-xs">▲</span>
+    if (delta < 0)      return <span className="text-overlay-text/80 text-xs">▼</span>
+    return                     <span className="text-overlay-text/40 text-xs">─</span>
+  }
+  if (delta === null) return <span className="text-muted-foreground text-xs">─</span>
+  if (delta > 0)      return <span className="text-chart-3 text-xs">▲</span>
+  if (delta < 0)      return <span className="text-destructive text-xs">▼</span>
+  return                     <span className="text-muted-foreground text-xs">─</span>
 }
 
-export function KPICard({ label, href, value, unitsShort, sparklineData = [], isLoading, isError, onClick }: KPICardProps) {
+export function KPICard({
+  label, href, value, unitsShort, sparklineData = [],
+  isLoading, isError, onClick, variant = 'default',
+}: KPICardProps) {
   const delta = getDelta(sparklineData)
 
   const handleClick = () => {
@@ -40,7 +52,11 @@ export function KPICard({ label, href, value, unitsShort, sparklineData = [], is
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-slate-200 p-4 flex flex-col gap-2">
+      <div className={`rounded-md p-4 flex flex-col gap-2 shadow-[0_4px_12px_rgba(23,28,31,0.05)] ${
+        variant === 'hero'
+          ? 'bg-gradient-to-br from-primary to-primary-container'
+          : 'bg-surface-lowest'
+      }`}>
         <Skeleton className="h-3 w-20" />
         <Skeleton className="h-6 w-16" />
         <Skeleton className="h-6 w-full" />
@@ -48,22 +64,55 @@ export function KPICard({ label, href, value, unitsShort, sparklineData = [], is
     )
   }
 
+  if (variant === 'hero') {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="bg-gradient-to-br from-primary to-primary-container text-white rounded-md
+                   shadow-[0_4px_12px_rgba(23,28,31,0.05)] p-4 flex flex-col gap-1 text-left
+                   hover:opacity-95 transition-opacity w-full"
+      >
+        <span className="text-[9px] font-bold uppercase tracking-widest text-overlay-text/60">{label}</span>
+        <div className="flex items-baseline gap-1.5">
+          {isError ? (
+            <span className="font-headline text-[2rem] font-extrabold text-overlay-text/40 leading-none">—</span>
+          ) : (
+            <>
+              <span className="font-headline text-[2rem] font-extrabold text-white leading-none">
+                {value !== undefined ? value.toFixed(2) : '—'}
+              </span>
+              {unitsShort && (
+                <span className="text-[11px] text-overlay-text/60">{unitsShort}</span>
+              )}
+              <DeltaIndicator delta={delta} variant="hero" />
+            </>
+          )}
+        </div>
+      </button>
+    )
+  }
+
   return (
     <button
       type="button"
       onClick={handleClick}
-      className="bg-white rounded-lg border border-slate-200 p-4 flex flex-col gap-1 text-left hover:border-blue-300 hover:shadow-sm transition-all w-full"
+      className="bg-surface-lowest rounded-md shadow-[0_4px_12px_rgba(23,28,31,0.05)]
+                 hover:shadow-[0_8px_24px_rgba(23,28,31,0.09)] p-4 flex flex-col gap-1
+                 text-left transition-all w-full"
     >
-      <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</span>
+      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{label}</span>
       <div className="flex items-baseline gap-1.5">
         {isError ? (
-          <span className="text-2xl font-bold text-slate-400">—</span>
+          <span className="font-headline text-[1.6rem] font-extrabold text-muted-foreground leading-none">—</span>
         ) : (
           <>
-            <span className="text-2xl font-bold text-slate-900">
+            <span className="font-headline text-[1.6rem] font-extrabold text-primary leading-none">
               {value !== undefined ? value.toFixed(2) : '—'}
             </span>
-            {unitsShort && <span className="text-xs text-slate-400">{unitsShort}</span>}
+            {unitsShort && (
+              <span className="text-[11px] text-muted-foreground">{unitsShort}</span>
+            )}
             <DeltaIndicator delta={delta} />
           </>
         )}
