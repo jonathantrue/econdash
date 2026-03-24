@@ -1,27 +1,30 @@
 import type { Metadata } from 'next'
-import { Inter, Geist } from 'next/font/google'
+import { Inter, Manrope } from 'next/font/google'
 import './globals.css'
-import { NavBar } from '@/components/layout/NavBar'
+import { Sidebar } from '@/components/layout/Sidebar'
+import { TopBar } from '@/components/layout/TopBar'
 import { TickerStrip } from '@/components/layout/TickerStrip'
-import { cn } from '@/lib/utils'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' })
-const inter = Inter({ subsets: ['latin'] })
+const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope' })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'EconDash — Economic Command Center',
+  title: 'Federal Intelligence — Economic Command Center',
   description: 'Comprehensive US economic data dashboard powered by FRED, BLS, BEA, and more.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn('font-sans', geist.variable)}>
-      <body className={`${inter.className} bg-slate-50 min-h-screen`}>
-        <NavBar />
+    <html lang="en" className={`${manrope.variable} ${inter.variable}`}>
+      <body className="bg-background text-foreground min-h-screen">
         <TickerStrip />
+        <Sidebar />
+        <TopBar />
         <NuqsAdapter>
-          <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+          <main className="ml-60 mt-[84px] min-h-[calc(100vh-84px)]">
+            {children}
+          </main>
         </NuqsAdapter>
       </body>
     </html>
