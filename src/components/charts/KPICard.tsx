@@ -71,7 +71,7 @@ export function KPICard({
         onClick={handleClick}
         className="bg-gradient-to-br from-primary to-primary-container text-white rounded-md
                    shadow-[0_4px_12px_rgba(23,28,31,0.05)] p-4 flex flex-col gap-1 text-left
-                   hover:opacity-95 transition-opacity w-full"
+                   hover:opacity-90 transition-opacity w-full"
       >
         <span className="text-[9px] font-bold uppercase tracking-widest text-overlay-text/60">{label}</span>
         <div className="flex items-baseline gap-1.5">
