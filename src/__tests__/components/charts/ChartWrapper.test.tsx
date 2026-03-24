@@ -97,4 +97,21 @@ describe('ChartWrapper', () => {
     expect(screen.getByTitle('Export')).toBeInTheDocument()
     expect(screen.getByTitle('Copy link')).toBeInTheDocument()
   })
+
+  it('container uses ambient shadow, not slate border', () => {
+    const { container } = render(
+      <ChartWrapper {...BASE_PROPS} data={SERIES} isLoading={false} isError={false} />
+    )
+    const wrapper = container.firstChild as HTMLElement
+    expect(wrapper.className).not.toContain('border-slate-200')
+    expect(wrapper.className).toContain('shadow-')
+  })
+
+  it('loading spinner uses border-primary class', () => {
+    const { container } = render(
+      <ChartWrapper {...BASE_PROPS} data={null} isLoading isError={false} />
+    )
+    const spinner = container.querySelector('[role="status"]')
+    expect(spinner?.className).toContain('border-primary')
+  })
 })
